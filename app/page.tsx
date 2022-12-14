@@ -1,57 +1,107 @@
-import Image from 'next/image'
-import styles from './page.module.css'
+"use client";
 
-export default function Home() {
+import { Parallax, ParallaxOrigin } from "#/ui/components/hocs/Parallax";
+import { Suspense, lazy } from "react";
+
+import { AboutSection } from "#/ui/partials/AboutSection";
+import { ContactSection } from "#/ui/partials/ContactSection";
+import { IntroSection } from "#/ui/partials/IntroSection";
+import { Loader } from "#/ui/components/atoms/Loader";
+import { PageSection } from "#/ui/components/hocs/PageSection";
+import { Theme } from "#/lib/constants/Theme";
+import { cx } from "class-variance-authority";
+import { equals } from "remeda";
+import { useTheme } from "@wits/next-themes";
+
+const LazyThreeText = lazy(() =>
+  import("#/ui/components/organisms/ThreeText").then((module) => ({
+    default: module.ThreeText,
+  }))
+);
+
+const heroClassNames = "w-[100vw] h-[75vh] md:h-[85vh]";
+
+export default function Page() {
+  const { resolvedTheme } = useTheme();
+
   return (
-    <div className={styles.container}>
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js 13!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>app/page.tsx</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://beta.nextjs.org/docs" className={styles.card}>
-            <h2>Documentation &rarr;</h2>
-            <p>Find in-depth information about Next.js 13</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/canary/examples"
-            className={styles.card}
-          >
-            <h2>Examples &rarr;</h2>
-            <p>Explore the Next.js 13 playground.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/templates/next.js/app-directory?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.card}
-          >
-            <h2>Deploy &rarr;</h2>
-            <p>Deploy your Next.js site to a public URL with Vercel.</p>
-          </a>
-        </div>
-      </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+    <>
+      <Parallax>
+        <Parallax.Section
+          as="section"
+          config={{
+            speed: 0.6,
+            origin: ParallaxOrigin.TOP,
+          }}
+          className={cx("relative block", heroClassNames)}
         >
-          Powered by{' '}
-          <span className={styles.logo}>
-            <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-          </span>
-        </a>
-      </footer>
-    </div>
-  )
+          <Suspense
+            fallback={
+              <Loader
+                className={cx(
+                  "text-neutral-900 dark:text-neutral-100",
+                  heroClassNames
+                )}
+              />
+            }
+          >
+            <LazyThreeText
+              className={cx(
+                "flex place-content-center overflow-hidden",
+                heroClassNames
+              )}
+              lineColor={
+                equals(Theme.DARK, resolvedTheme)
+                  ? "rgb(125, 125, 125)"
+                  : "rgb(244, 238, 217)"
+              }
+            >
+              Hi,
+            </LazyThreeText>
+          </Suspense>
+        </Parallax.Section>
+
+        <Parallax.Section
+          as={PageSection}
+          config={{
+            speed: 1,
+            origin: ParallaxOrigin.BOTTOM,
+            easing: "easeOutQuint",
+            outside: {
+              opacity: 0,
+              translateZ: -50,
+            },
+          }}
+        >
+          <IntroSection />
+        </Parallax.Section>
+
+        <Parallax.Section
+          as={PageSection}
+          config={{
+            speed: 1.25,
+            origin: ParallaxOrigin.CENTER,
+            easing: "easeOutQuad",
+            outside: {
+              opacity: 0,
+              translateZ: -50,
+            },
+          }}
+        >
+          {({ progress }) => <AboutSection progress={progress} />}
+        </Parallax.Section>
+
+        <Parallax.Section
+          as={PageSection}
+          className="mb-20"
+          config={{
+            speed: 1.5,
+            origin: ParallaxOrigin.BOTTOM,
+          }}
+        >
+          {({ progress }) => <ContactSection progress={progress} />}
+        </Parallax.Section>
+      </Parallax>
+    </>
+  );
 }
