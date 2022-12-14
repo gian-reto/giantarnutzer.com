@@ -6,9 +6,13 @@ import portrait from "#/public/images/portrait.jpg";
 
 export type AboutSectionProps = {
   progress: number;
+  isLikelyMobile: boolean;
 };
 
-export const AboutSection = ({ progress }: AboutSectionProps) => {
+export const AboutSection = ({
+  progress,
+  isLikelyMobile,
+}: AboutSectionProps) => {
   return (
     <div className="grid grid-cols-5 gap-12">
       <div
@@ -38,7 +42,9 @@ export const AboutSection = ({ progress }: AboutSectionProps) => {
             "font-medium text-left text-6xl xs:text-7xl sm:text-8xl md:text-9xl"
           )}
           style={{
-            transform: `translate3d(0px, ${progress * 150}px, 0px)`,
+            transform: !isLikelyMobile
+              ? `translate3d(0px, ${progress * 150}px, 0px)`
+              : undefined,
           }}
         >
           Excited
@@ -66,10 +72,12 @@ export const AboutSection = ({ progress }: AboutSectionProps) => {
           <li
             key={item}
             style={{
-              transform: `translate3d(0px, ${Math.max(
-                progress * 25 * (index + 1),
-                0
-              )}px, 0px)`,
+              transform: !isLikelyMobile
+                ? `translate3d(0px, ${Math.max(
+                    progress * 25 * (index + 1),
+                    0
+                  )}px, 0px)`
+                : undefined,
             }}
           >
             {item}

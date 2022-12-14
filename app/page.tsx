@@ -88,18 +88,30 @@ export default function Page() {
             },
           }}
         >
-          {({ progress }) => <AboutSection progress={progress} />}
+          {({ progress, isLikelyMobile }) => (
+            <AboutSection progress={progress} isLikelyMobile={isLikelyMobile} />
+          )}
         </Parallax.Section>
 
         <Parallax.Section
           as={PageSection}
           className="mb-20"
           config={{
-            speed: 1.5,
+            speed: 1.25,
             origin: ParallaxOrigin.BOTTOM,
+            easing: "easeOutQuad",
+            outside: {
+              opacity: 0,
+              translateZ: -50,
+            },
           }}
         >
-          {({ progress }) => <ContactSection progress={progress} />}
+          {({ progress, isLikelyMobile }) => (
+            <ContactSection
+              progress={progress}
+              isLikelyMobile={isLikelyMobile}
+            />
+          )}
         </Parallax.Section>
       </Parallax>
     </>

@@ -148,6 +148,7 @@ export type ParallaxConfig = {
 
 type SectionChildProps = {
   progress: number;
+  isLikelyMobile: boolean;
 };
 
 type SectionBaseProps = {
@@ -289,7 +290,10 @@ const Section: SectionComponentType = <C extends ElementType = "div">({
         }}
       >
         {isFunction(children)
-          ? children({ progress: progressFromOriginY })
+          ? children({
+              progress: progressFromOriginY,
+              isLikelyMobile: viewportWidth < MOBILE_BREAKPOINT,
+            })
           : children}
       </div>
     </Component>
@@ -337,7 +341,7 @@ const calculateTranslation = (
   const maxTranslateY = bounds.height * multiplier;
   const translateY =
     equals(multiplier, 1) ||
-    (parentViewportWidth < 768 && Math.abs(multiplier) > 1)
+    (parentViewportWidth < MOBILE_BREAKPOINT && Math.abs(multiplier) > 1)
       ? 0
       : calculateTranslateY(maxTranslateY, 0, progressFromOriginY);
 
@@ -409,6 +413,8 @@ const calculateTranslateZ = (
 /*
  * Constants
  */
+
+const MOBILE_BREAKPOINT = 768;
 
 const nonTranslatedStyle = {
   transform: "translate3d(0px, 0px, 0px)",

@@ -8,15 +8,21 @@ import styles from "./index.module.css";
 
 export type ContactSectionProps = {
   progress: number;
+  isLikelyMobile: boolean;
 };
 
-export const ContactSection = ({ progress }: ContactSectionProps) => {
+export const ContactSection = ({
+  progress,
+  isLikelyMobile,
+}: ContactSectionProps) => {
   return (
     <>
       <h2
         className="mb-4 text-6xl font-semibold text-left xs:text-7xl sm:text-8xl md:text-9xl sm:mb-8 md:mb-16"
         style={{
-          transform: `translate3d(0px, ${progress * 150}px, 0px)`,
+          transform: !isLikelyMobile
+            ? `translate3d(0px, ${progress * 150}px, 0px)`
+            : undefined,
         }}
       >
         Get in
