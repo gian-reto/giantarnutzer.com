@@ -15,7 +15,10 @@ export const PageSection = forwardRef<HTMLElement, PageSectionProps>(
     return (
       <section
         {...rest}
-        className={cx("max-w-4xl px-4 mx-auto md:p-8", className)}
+        className={cx(
+          "max-w-4xl px-4 py-10 mx-auto md:px-8 md:py-0",
+          className
+        )}
         ref={ref}
       >
         {children}

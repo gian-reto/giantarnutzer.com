@@ -86,6 +86,14 @@ const Container = ({ letters, className, lineColor }: ContainerProps) => {
             rotation: [y / 5, x / 5, 0],
           });
         }}
+        onTouchMove={({ touches }) => {
+          const x = (touches[0].clientX / window.innerWidth) * 2 - 1;
+          const y = -(touches[0].clientY / window.innerHeight) * 2 + 1;
+
+          springRef.start({
+            rotation: [y / 5, x / 5, 0],
+          });
+        }}
       >
         <Canvas
           shadows

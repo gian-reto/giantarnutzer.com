@@ -67,7 +67,7 @@ export const AboutSection = ({ progress }: AboutSectionProps) => {
             key={item}
             style={{
               transform: `translate3d(0px, ${Math.max(
-                progress * 50 * index,
+                progress * 25 * (index + 1),
                 0
               )}px, 0px)`,
             }}
@@ -86,7 +86,7 @@ export const AboutSection = ({ progress }: AboutSectionProps) => {
         <a
           href="mailto:hi@giantarnutzer.com"
           className={cx(
-            "underline underline-offset-8 place-self-end",
+            "underline underline-offset-8 place-self-end text-lg sm:text-xl",
             "transition-colors text-neutral-500 dark:text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100"
           )}
         >

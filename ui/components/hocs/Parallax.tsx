@@ -60,19 +60,22 @@ export const Parallax: ParallaxComponentType & ParallaxSubcomponents = <
 
   const childrenArray = Children.toArray(children);
 
-  const [debouncedViewportHeight, setDebouncedViewportHeight] = useState(0);
+  const [
+    [debouncedViewportWidth, debouncedViewportHeight],
+    setDebouncedViewportSize,
+  ] = useState([0, 0]);
   const [debouncedContainerHeight, setDebouncedContainerHeight] = useState(0);
 
   const { y } = useWindowScroll();
-  const { height: viewportHeight } = useWindowSize();
+  const { width: viewportWidth, height: viewportHeight } = useWindowSize();
   const [containerRef, { height: containerHeight }] = useMeasure();
 
   useDebounce(
     () => {
-      setDebouncedViewportHeight(viewportHeight);
+      setDebouncedViewportSize([viewportWidth, viewportHeight]);
     },
     500,
-    [viewportHeight]
+    [viewportWidth, viewportHeight]
   );
 
   useDebounce(
@@ -95,6 +98,7 @@ export const Parallax: ParallaxComponentType & ParallaxSubcomponents = <
                 _internal: {
                   forwardedKey: index,
                   windowScrollY: y,
+                  viewportWidth: debouncedViewportWidth,
                   viewportHeight: debouncedViewportHeight,
                   containerHeight: debouncedContainerHeight,
                 },
@@ -106,7 +110,9 @@ export const Parallax: ParallaxComponentType & ParallaxSubcomponents = <
             })
           )
         ) : (
-          <div style={nonTranslatedStyle}>{child}</div>
+          <div key={index} style={nonTranslatedStyle}>
+            {child}
+          </div>
         )
       )}
     </Component>
@@ -150,6 +156,7 @@ type SectionBaseProps = {
   _internal?: {
     forwardedKey?: number;
     windowScrollY: number;
+    viewportWidth: number;
     viewportHeight: number;
     containerHeight: number;
   };
@@ -189,10 +196,12 @@ const Section: SectionComponentType = <C extends ElementType = "div">({
   _internal: {
     forwardedKey,
     windowScrollY,
+    viewportWidth,
     viewportHeight,
     containerHeight,
   } = {
     windowScrollY: 0,
+    viewportWidth: 0,
     viewportHeight: 0,
     containerHeight: 0,
   },
@@ -223,6 +232,7 @@ const Section: SectionComponentType = <C extends ElementType = "div">({
         easing,
         multiplier,
         ref.current,
+        viewportWidth,
         viewportHeight,
         windowScrollY,
         outsideOpacity,
@@ -307,6 +317,7 @@ const calculateTranslation = (
   easing: ParallaxEasing,
   multiplier: number,
   element: HTMLElement,
+  parentViewportWidth: number,
   parentViewportHeight: number,
   parentScrollDistanceY: number,
   outsideOpacity: number,
@@ -324,9 +335,11 @@ const calculateTranslation = (
   const progressToOriginY = 1 - clamp(Math.abs(progressFromOriginY), 0, 1);
 
   const maxTranslateY = bounds.height * multiplier;
-  const translateY = equals(multiplier, 1)
-    ? undefined
-    : calculateTranslateY(maxTranslateY, 0, progressFromOriginY);
+  const translateY =
+    equals(multiplier, 1) ||
+    (parentViewportWidth < 768 && Math.abs(multiplier) > 1)
+      ? 0
+      : calculateTranslateY(maxTranslateY, 0, progressFromOriginY);
 
   // Exit if `translateY` would not be in viewport to avoid rerendering, except if `currentTranslateY` is still the initial value
   if (lazy && !isInViewport(bounds, parentViewportHeight, translateY))
